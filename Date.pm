@@ -1,7 +1,7 @@
 package Class::Date;
 use Time::Local qw(timegm timelocal);
 
-# $Id: Date.pm,v 1.1 2001/08/07 15:26:20 dlux Exp $
+# $Id: Date.pm,v 1.2 2001/10/11 10:45:18 dlux Exp $
 
 require 5.005;
 
@@ -1263,6 +1263,7 @@ Portions Copiright (c) Matt Sergeant
     (Lots of code are borrowed from the Time::Object module)
   - Tatsuhiko Miyagawa <miyagawa@cpan.org> (bugfixes)
   - Stas Bekman <stas@stason.org> (suggestions, bugfix)
+  - Chris Winters <chris@cwinters.com> (win32 .ppd version)
 
 =head1 SEE ALSO
 
