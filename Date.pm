@@ -34,7 +34,7 @@ BEGIN {
     @EXPORT_OK = (qw( date localdate gmdate now @ERROR_MESSAGES), 
         @{$EXPORT_TAGS{errors}});
 
-    $VERSION = '1.1.7';
+    $VERSION = '1.1.7_01';
     eval { Class::Date->bootstrap($VERSION); };
     if ($@) {
         warn "Cannot find the XS part of Class::Date, \n".
@@ -207,10 +207,34 @@ sub new_from_scalar_internal { my ($s,$time,$tz) = @_;
     $obj->[c_tz]=$tz;
     $obj->_recalc_from_epoch;
     return $obj;
+  } elsif ($time =~ /^\s*
+		     (\d{2}|\d{4}) -?
+                      (?:(\d\d) -? (\d\d) | (\d{3}) | [wW](\d{2}) )
+		      (?:\s*|T)
+
+		     # time - optional, defaults to 0:00
+                      (\d\d):?(\d\d):?(\d\d)(?:\.(\d*))? \s*
+
+		     # time zone - optional, defaults to local time
+		     ( Z | [+-](\d\d):?(\d\d)? )?
+
+		     $/x) {
+    # most ISO-8601 formats
+    if ($4 or $5) {
+    	return undef;
+	#croak "year-weekofyear (wNN) and year-dayofyear (YYYY-NNN) are not supported by this module."
+    } else {
+	# $9 is fractional seconds
+	# $10 is the timezone, which is currently being ignored.
+        return $s->new_from_array([$1, $2, $3, $6, $7, $8], $tz);
+    }
   } elsif ($time =~ /^\s*(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)\d*\s*$/) { 
-    # mysql timestamp
+
+    # mysql timestamp (difference between this and compact ISO is that
+    # it has an arbitrary number of spurious digits at the end)
     my ($y,$m,$d,$hh,$mm,$ss)=($1,$2,$3,$4,$5,$6);
     return $s->new_from_array([$y,$m,$d,$hh,$mm,$ss],$tz);
+
   } elsif ($time =~ /^\s*( \-? \d+ (\.\d+ )? )\s*$/x) {
     # epoch secs
     my $obj=bless [], ref($s) || $s;
