@@ -1,5 +1,5 @@
 package Class::Date;
-# $Id: Date.pm,v 1.5 2001/11/16 17:29:00 dlux Exp $
+# $Id: Date.pm,v 1.6 2002/02/25 22:21:03 dlux Exp $
 
 require 5.005;
 
@@ -53,7 +53,7 @@ BEGIN {
 
 }
 
-$VERSION = '1.0.8';
+$VERSION = '1.0.9';
 eval { Class::Date->bootstrap($VERSION); };
 if ($@) {
     warn "Cannot find the XS part of Class::Date, using strftime from POSIX module.\n"
@@ -423,6 +423,14 @@ sub month_end { my ($s)=@_;
 
 sub days_in_month {
   shift->month_end->mday;
+}
+
+sub is_leap_year { my ($s) = @_;
+    my $new_date;
+    eval {
+        $new_date = $s->new([$s->year, 2, 29]);
+    } or return 0;
+    return $new_date->day == 29;
 }
 
 sub strftime { my ($s,$format)=@_;
