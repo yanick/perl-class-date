@@ -4,8 +4,9 @@ package Class::Date;
 require 5.005_03;
 
 use strict;
+
 use vars qw(
-  $VERSION @EXPORT_OK %EXPORT_TAGS @ISA
+  $VERSION @EXPORT_OK @ISA
   $DATE_FORMAT $DST_ADJUST $MONTH_BORDER_ADJUST $RANGE_CHECK
   @NEW_FROM_SCALAR @ERROR_MESSAGES $WARNINGS 
   $DEFAULT_TIMEZONE $LOCAL_TIMEZONE $GMT_TIMEZONE
@@ -17,7 +18,7 @@ use UNIVERSAL qw(isa);
 use Exporter;
 use DynaLoader;
 use Time::Local;
-use Class::Date::Const;
+use Class::Date::Const ':all';
 
 BEGIN { 
     $WARNINGS = 1 if !defined $WARNINGS;
@@ -30,9 +31,10 @@ BEGIN {
     }
 
     @ISA=qw(DynaLoader Exporter);
-    %EXPORT_TAGS = ( errors => $Class::Date::Const::EXPORT_TAGS{errors});
+
+    # %EXPORT_TAGS is imported from Class::Date::Const
     @EXPORT_OK = (qw( date localdate gmdate now @ERROR_MESSAGES), 
-        @{$EXPORT_TAGS{errors}});
+		  @{$EXPORT_TAGS{errors}});
 
     $VERSION = '1.1.7_01';
     eval { Class::Date->bootstrap($VERSION); };
@@ -47,13 +49,14 @@ BEGIN {
     }
 }
 
-$GMT_TIMEZONE = 'GMT';
+$GMT_TIMEZONE = 'UTC';
 $DST_ADJUST = 1;
 $MONTH_BORDER_ADJUST = 0;
 $RANGE_CHECK = 0;
 $RESTORE_TZ = 1;
 $DATE_FORMAT="%Y-%m-%d %H:%M:%S";
 
+# sets the default timezone to the passed value.
 sub _set_tz { my ($tz) = @_;
     my $lasttz = $ENV{TZ};
     if (!defined $tz || $tz eq $NOTZ_TIMEZONE) {
@@ -67,6 +70,7 @@ sub _set_tz { my ($tz) = @_;
     return $lasttz;
 }
 
+# 
 sub _set_temp_tz { my ($tz, $sub) = @_;
     my $lasttz = _set_tz($tz);
     my $retval = eval { $sub->(); };

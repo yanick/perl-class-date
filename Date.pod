@@ -96,8 +96,9 @@ getting results, or parts of results back
 
 =head1 Creating a new date object
 
-You can create a date object by the "date", "localdate" or "gmdate"
-function, or by calling the C<Class::Date-E<gt>new()> constructor.
+You can create a date object by the "date", "localdate", "gmdate" or
+"isodate" function, or by calling the C<Class::Date-E<gt>new()>
+constructor.
 
 C<date()> and C<Class::Date-E<gt>new()> are equivalent, both have two
 arguments: The date and (optionally) the timezone.
@@ -109,8 +110,9 @@ arguments: The date and (optionally) the timezone.
 B<note:> you cannot simply supply the return from list context
 C<CORE::localtime()> or C<CORE::gmtime()> (see L<perlfunc/localtime>
 and L<perlfunc/gmtime>) to C<Class::Date-E<gt>new([])>; you would need
-to add 1900 (or possibly 1904) to the value first.  Use the C<now()>
-function, or see below for a more reliable method.
+to add 1900 (or possibly 1904) to the year value first, add one to the
+month, etc.  Use the C<now()> function, or see below for a more
+reliable method.
 
 You can also supply the date information in scalar form, or hashref:
 
@@ -119,6 +121,8 @@ You can also supply the date information in scalar form, or hashref:
   $date = date({ year => 2003, month => 12, day => 31,
                  hour => 12,   min   => 56, sec => 59 },
                'Pacific/Auckland');
+  $date = date   (20031231);     #Thu Aug 20 20:13:51 1970
+  $date = isodate("20031231");   #Wed Dec 31  0:00:00 2003
 
 See L</Valid Date Formats> for more information on the allowable
 formats of the date.
@@ -145,8 +149,8 @@ C<$Class::Date::LOCAL_TIMEZONE>.  This behaviour mimics the behaviour
 of earlier versions (1.1.x and below).
 
 C<localdate $x> is equivalent to C<date $x,
-$Class::Date::LOCAL_TIMEZONE>, and C<gmdate $x> is equivalent to C<date
-$x, 'UTC'>
+$Class::Date::LOCAL_TIMEZONE>, and C<gmdate $x> is equivalent to
+C<date $x, 'UTC'>
 
   $date1 = localdate [2000,11,12];
   $date2 = gmdate [2000,4,2,3,33,33];
@@ -154,18 +158,15 @@ $x, 'UTC'>
   $date = localdate(time);
 
 The I<time offset> can also be specified in ISO-8601 notation; however
-the I<time zone> of the resulting date is fixed to that offset, and
-not to any country's time zone:
+it is still specifying a fixed point in time, rather than a floating
+time.
 
   $date = date("2001-01-17 10:10:00 +12:00");
-  print $date->tz;   # prints "+12:00";
+  print $date->tz;   # prints "+12:00"
 
-However, such dates may freely be converted to a local time zone using
-the C<to_tz($timezone)> copy constructor, or the C<set(tz =E<gt>
-$timezone)> method:
-
-  $date = date("2001-01-17 10:10:00 +12:00")
+  print date("2001-01-17 10:10:00 +02:00")
              ->to_tz("Pacific/Auckland");
+    # prints "2001-01-17 21:10:00 +13:00"
 
 =head2 Valid Date Formats
 
@@ -178,24 +179,24 @@ for the scalar use; for example:
 
 Dates:
 
-  YY
+  YY               (iso only)
   -MM
   --DD
   YY-MM
-  YYYY
-  YYDDD
+  YYYY             (iso only)
+  YYDDD            (iso only)
   YY-DDD
-  YYYYMM
+  YYYYMM           (iso only)
   YYYY-MM
-  YYYYDDD
-  YYYYMMDD
+  YYYYDDD          (iso only)
+  YYYYMMDD         (iso only)
   YY-MM-DD
   YYYY-MM-DD
   YYYYWNN
   YYYYWNND
 
 (note: the W is a literal C<W> or C<w>, and is for specifying the week
-of the year).
+of the year, then 01 to 54).
 
 Times (must be preceded/seperated from the date with a literal C<T> or
 C<t> where ambiguous with the above forms, or follow a complete date
@@ -218,17 +219,11 @@ with a space):
 A valid 32-bit integer: This is parsed as a unix time.
 
 However, this is ambiguous with compact ISO-8601 date forms above.  To
-resolve this ambiguity, B<this method of construction is only valid
-with the XS version of this module>.  You must only use "clean"
-numbers that have not been converted to a string.  To force this, it
-is recommended that you explicitly force integer interpretation by
-prepending C<0+> to the time (or using C<int()>).
-
-These are the recommended methods for unix date input:
+resolve this ambiguity, B<unix epoch seconds take precedence with
+C<new()> and C<date()> constructors, but not the C<isodate()>
+constructor.
 
   $date = date(time());
-  $date = date(0+$myEpochTime);
-  $date = date(int($myEpochTime));
 
 =item [$year, $month, $day, $hour, $min, $sec]
 
@@ -245,9 +240,25 @@ You can specify C<-DateParse> as  an import parameter, e.g:
 
   use Class::Date qw(date -DateParse);
 
-With this, the module will try to load Date::Parse module, and if it find it then all 
-these formats can be used as an input. Please refer to the Date::Parse
-documentation.
+With this, the module will try to load L<Date::Parse>, and if it find
+it then all these formats can be used as an input.  ()
+
+This means, that with a little extra compile-time and at slightly
+slower rates, you can parse dates with formats like these:
+
+   1995:01:24T09:08:17.1823213           ISO-8601
+   1995-01-24T09:08:17.1823213
+   Wed, 16 Jun 94 07:29:35 CST           Comma and day name are optional
+   Thu, 13 Oct 94 10:13:13 -0700
+   Wed, 9 Nov 1994 09:50:32 -0500 (EST)  Text in ()'s will be ignored.
+   21 dec 17:05
+   21-dec 17:05
+   21/dec 17:05
+   21/dec/93 17:05
+   1999 10:02:18 "GMT"
+   16 Nov 94 22:28:20 PST
+
+See L<Date::Parse> for more.
 
 =back
 
@@ -255,34 +266,48 @@ documentation.
 
 =cut
 
-#=====================================================================
-#   API REVIEWED UP TO HERE
-#=====================================================================
-
-# this epoch vs ISO-8601 thing is a bit concerning.
-
 =head2 Extracting out Parts of a Date Object
 
+A wide variety of methods are exported, to be able to extract out
+the fields in slightly different ways:
+
+  # quick "outs"
+  $date->hms          # 01:23:45
+  $date->ymd          # 2000/02/29
+  $date->mdy          # 02/29/2000
+  $date->dmy          # 29/02/2000
+
+  # all others, just make up a sub name, this will leave a
+  # compiled sub to 
+
+  $date->YmdHMS
+
+  $date->string       # 2000-02-29 12:21:11 (format can be changed, look below)
+  "$date"             # same as prev.
   # getting values of an absolute date object
   $date;              # prints the date in default output format (see below)
-  $date->year;        # year, e.g: 2001
-  $date->_year;       # year - 1900, e.g. 101
   $date->yr;          # 2-digit year 0-99, e.g 1
+  $date->year;        # year, e.g: 2001
+  $date->_year;       # C year (year - 1900 on Unix), e.g. 101
+
   $date->mon;         # month 1..12
   $date->month;       # same as prev.
   $date->_mon;        # month 0..11
   $date->_month;      # same as prev.
-  $date->day;         # day of month
+
   $date->mday;        # day of month
+  $date->day;         # day of month
   $date->day_of_month;# same as prev.
+
+  $date->wday;        # 1 = Sunday
+  $date->_wday;       # 0 = Sunday
+  $date->day_of_week; # same as prev.
+
   $date->hour;
   $date->min;
   $date->minute;      # same as prev.
   $date->sec;
   $date->second;      # same as prev.
-  $date->wday;        # 1 = Sunday
-  $date->_wday;       # 0 = Sunday
-  $date->day_of_week; # same as prev.
   $date->yday;        
   $date->day_of_year; # same as prev.
   $date->isdst;       # DST?
@@ -292,12 +317,7 @@ documentation.
   $date->monthname;   # same as prev.
   $date->wdayname;    # Thursday
   $date->day_of_weekname # same as prev.
-  $date->hms          # 01:23:45
-  $date->ymd          # 2000/02/29
-  $date->mdy          # 02/29/2000
-  $date->dmy          # 29/02/2000
-  $date->string       # 2000-02-29 12:21:11 (format can be changed, look below)
-  "$date"             # same as prev.
+
   $date->tzoffset     # timezone-offset, eg: +12
   $date->strftime($format) # POSIX strftime (without the huge POSIX.pm)
   $date->tz           # returns the base timezone as you specify, eg: CET
@@ -918,7 +938,7 @@ you just run the 'install'.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001 SzabÛ, Bal·zs (dLux)
+Copyright (c) 2001 SzabÅÛ, BalÅ·zs (dLux)
 
 All rights reserved. This program is free software; you can redistribute it 
 and/or modify it under the same terms as Perl itself.
@@ -927,7 +947,7 @@ Portions Copyright (c) Matt Sergeant
 
 =head1 AUTHOR
 
-  dLux (SzabÛ, Bal·zs) <dlux@dlux.hu>
+  dLux (SzabÅÛ, BalÅ·zs) <dlux@dlux.hu>
 
 =head1 CREDITS
 
@@ -969,3 +989,4 @@ Time::Object(3pm).
 Date::Handler(3pm).
 
 =cut
+                                              

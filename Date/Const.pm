@@ -1,7 +1,7 @@
 package Class::Date::Const;
-use strict;
+use strict 'vars', 'subs';
 
-use vars qw(@EXPORT @ISA @ERROR_MESSAGES %EXPORT_TAGS);
+use vars qw(@EXPORT @EXPORT_OK @ISA @ERROR_MESSAGES %EXPORT_TAGS);
 use Exporter;
 
 my %FIELDS = (
@@ -27,7 +27,10 @@ my %FIELDS = (
     ci_errmsg   => 1,
 );
 
-eval " sub $_ () { ".$FIELDS{$_}."}" foreach keys %FIELDS;
+# you don't need eval for constant subs :-)
+while ( my($field, $offset) = each %FIELDS ) {
+    *$field = sub() { $offset }
+}
 @ISA = qw(Exporter);
 
 my @ERRORS = ( 
@@ -44,12 +47,16 @@ my $c = 0;
 while (@ERRORS) {
     my $errorcode = shift @ERRORS;
     my $errorname = shift @ERRORS;
-    eval "sub $errorcode () { $c }";
+    *$errorcode = sub() { $c };
     $ERROR_MESSAGES[$c] = $errorname;
     push @{$EXPORT_TAGS{errors}}, $errorcode;
     $c++;
 }
 
-@EXPORT = (keys %FIELDS, qw(@ERROR_MESSAGES), @{$EXPORT_TAGS{errors}});
+@EXPORT = (keys %FIELDS, qw(@ERROR_MESSAGES) @{$EXPORT_TAGS{errors}});
+
+# exporting a symbol like this can have side effects, so you have to
+# ask for it.
+@EXPORT_OK = qw(%EXPORT_TAGS);
 
 1;
