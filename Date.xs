@@ -3,17 +3,25 @@
  * Some functions (init_tm, mini_mktime, strftime_xs) are borrowed from 
  * Matt Sergeant's Time::Object module
  *
- * $Id: Date.xs,v 1.3 2002/07/15 18:49:01 dlux Exp $
+ * $Id: Date.xs,v 1.4 2002/08/28 21:38:05 dlux Exp $
  *
  */
 
 #ifdef __cplusplus
 #extern "C" {
 #endif
+#include "config.h"
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
 #include <time.h>
+
+/* These lines are borrowed from the perl #9823 patch */
+/* Mac OSX does not include a definition of tzname in a .h file */
+#if defined (HAS_TZNAME) && defined(__APPLE__) && defined(__MACH__)
+extern char *tzname[2];
+#endif
+
 #ifdef __cplusplus
 }
 #endif
