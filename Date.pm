@@ -1,5 +1,5 @@
 package Class::Date;
-# $Id: Date.pm,v 1.11 2003/01/03 08:10:50 dlux Exp $
+# $Id$
 
 require 5.005_03;
 
