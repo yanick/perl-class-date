@@ -559,6 +559,7 @@ CREDITS
         (Lots of code are borrowed from the Time::Object module)
       - Tatsuhiko Miyagawa <miyagawa@cpan.org> (bugfixes)
       - Stas Bekman <stas@stason.org> (suggestions, bugfix)
+      - Chris Winters <chris@cwinters.com> (win32 .ppd version)
 
 SEE ALSO
     perl, Date::Calc, Time::Object.

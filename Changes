@@ -1,9 +1,13 @@
 Revision history for Perl extension Class::Date.
 
+1.0.6   Thu Oct 11 14:26:27 CEST 2001
+	- Fixed a bug with month_end and newer stable perls (5.6.1)
+	- Fixed a bug with Time::Local in perl 5.7.2
+
 1.0.5	Tue Jul 17 14:31:00 CEST 2001
 	- Restored and documented the compatibility issues with perl 5.005
 
-1.0.4	Jul 12 11:00:46 CEST 2001
+1.0.4	Tue Jul 12 11:00:46 CEST 2001
 	- Fix a bug with RANGE_CHECK in addition
 
 1.0.3	Tue Jul  3 13:09:04 CEST 2001

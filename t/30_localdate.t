@@ -1,7 +1,7 @@
 use Test;
 use strict;
 BEGIN { 
-  plan tests => 74;
+  plan tests => 75;
 };
 use Class::Date qw(localdate date);
 
@@ -168,3 +168,6 @@ ok $date1,"2000-11-11 00:01:02";
   ok $date11+'4M',"2001-09-30";
   ok $date11-'3M',"2001-02-28";
 }
+
+my $date14 = date("2001-12-18");
+ok $date14->days_in_month, 31;
