@@ -1,6 +1,6 @@
 =head1 NAME
 
-Class::Date - Class for easy date and time manipulation
+Class::Date - Class for simple date and time manipulation
 
 =head1 SYNOPSIS
 
@@ -221,7 +221,7 @@ A valid 32-bit integer: This is parsed as a unix time.
 However, this is ambiguous with compact ISO-8601 date forms above.  To
 resolve this ambiguity, B<unix epoch seconds take precedence with
 C<new()> and C<date()> constructors, but not the C<isodate()>
-constructor.
+constructor>.
 
   $date = date(time());
 
@@ -259,8 +259,6 @@ slower rates, you can parse dates with formats like these:
    16 Nov 94 22:28:20 PST
 
 See L<Date::Parse> for more.
-
-=back
 
 =back
 

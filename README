@@ -1,177 +1,56 @@
 NAME
-    Class::Date - Class for easy date and time manipulation
+    Class::Date - Class for simple date and time manipulation
 
 SYNOPSIS
-      use Class::Date qw(:errors date localdate gmdate now -DateParse);
-  
-      # creating absolute date object (local time)
-      $date = new Class::Date [$year,$month,$day,$hour,$min,$sec];
-      $date = date [$year,$month,$day,$hour,$min,$sec]; 
-        # ^- "date" is an exportable function, the same as Class::Date->new
-      $date = date { year => $year, month => $month, day => $day,
-        hour => $hour, min => $min, sec => $sec };
-      $date = date "2001-11-12 07:13:12";
-      $date = localdate "2001-12-11";
-      $date = now;                      #  the same as date(time)
-      $date = date($other_date_object); # cloning
-      ...
+      use Class::Date qw(date localdate gmdate now -DateParse);
 
-      # creating absolute date object (GMT)
-      $date = new Class::Date [$year,$month,$day,$hour,$min,$sec],'GMT';
+      # creating non-timezones date object ('floating' time)
+      $date = new Class::Date [$year,$month,$day,$hour,$min,$sec];
+      $date = date [$year,$month,$day,$hour,$min,$sec];
+      $date = date { year => $year, month => $month, day => $day,
+                     hour => $hour, min   => $min,   sec => $sec };
+
+      $date = date "2001-11-12 07:13:12";  # or any ISO-8601 format
+
+      # add a month to it:
+      $date += "1M";
+      $date += "P1M";         # ISO-8601 Periods supported
+      $date += [0,1,0,0,0,0]; # above formats supported
+      $date += 31*24*60*60;   # seconds
+
+      # intuitive arithmetic between dates:
+      $days_between = ( date('2001-11-12')
+                        - date('2001-07-04') )->day; # prints 131
+
+      # creating date object in local timezone
+      $date = localdate "2001-12-11";      # force local time
+      $date = now;                         # the same as date(time)
+
+      # creating absolute date object (UTC)
+      $date = new Class::Date [$yyyy,$mm,$dd,$HH,$MM,$SS], 'UTC';
       $date = gmdate "2001-11-12 17:13";
-      ...
 
       # creating absolute date object in any other timezone
-      $date = new Class::Date [$year,$month,$day,$hour,$min,$sec],'Iceland';
+      $date = date [$year,$month,$day,$hour,$min,$sec], 'Iceland';
       $date = date "2001-11-12 17:13", 'Iceland';
-      $date2 = $date->new([$y2, $m2, $d2, $h2, $m2, $s2]); 
-        # ^- timezone is inherited from the $date object
 
-      # creating relative date object
-      # (normally you don't need to create this object explicitly)
-      $reldate = new Class::Date::Rel "3Y 1M 3D 6h 2m 4s";
-      $reldate = new Class::Date::Rel "6Y";
-      $reldate = new Class::Date::Rel $secs;  # secs
-      $reldate = new Class::Date::Rel [$year,$month,$day,$hour,$min,$sec];
-      $reldate = new Class::Date::Rel { year => $year, month => $month, day => $day,
-        hour => $hour, min => $min, sec => $sec };
-      $reldate = new Class::Date::Rel "2001-11-12 07:13:12";
-      $reldate = new Class::Date::Rel "2001-12-11";
-
-      # getting values of an absolute date object
-      $date;              # prints the date in default output format (see below)
-      $date->year;        # year, e.g: 2001
-      $date->_year;       # year - 1900, e.g. 101
-      $date->yr;          # 2-digit year 0-99, e.g 1
-      $date->mon;         # month 1..12
-      $date->month;       # same as prev.
-      $date->_mon;        # month 0..11
-      $date->_month;      # same as prev.
-      $date->day;         # day of month
-      $date->mday;        # day of month
-      $date->day_of_month;# same as prev.
-      $date->hour;
-      $date->min;
-      $date->minute;      # same as prev.
-      $date->sec;
-      $date->second;      # same as prev.
-      $date->wday;        # 1 = Sunday
-      $date->_wday;       # 0 = Sunday
-      $date->day_of_week; # same as prev.
-      $date->yday;        
-      $date->day_of_year; # same as prev.
-      $date->isdst;       # DST?
-      $date->daylight_savings; # same as prev.
-      $date->epoch;       # UNIX time_t
-      $date->monname;     # name of month, eg: March
-      $date->monthname;   # same as prev.
-      $date->wdayname;    # Thursday
-      $date->day_of_weekname # same as prev.
-      $date->hms          # 01:23:45
-      $date->ymd          # 2000/02/29
-      $date->mdy          # 02/29/2000
-      $date->dmy          # 29/02/2000
-      $date->string       # 2000-02-29 12:21:11 (format can be changed, look below)
-      "$date"             # same as prev.
-      $date->tzoffset     # timezone-offset
-      $date->strftime($format) # POSIX strftime (without the huge POSIX.pm)
-      $date->tz           # returns the base timezone as you specify, eg: CET
-      $date->tzdst        # returns the real timezone with dst information, eg: CEST
-
+      # getting parts out - comprehensive methods available
+      my $year = $date->year;     # full
+      my $year_C = $date->_year;  # year - 1900 (or 1904 on Mac)
+      my $month = $date->mon;     # 1..12
+      my $month_C = $date->_mon;  # 0..11
       ($year,$month,$day,$hour,$min,$sec)=$date->array;
-      ($year,$month,$day,$hour,$min,$sec)=@{ $date->aref };
-      # !! $year: 1900-, $month: 1-12
-
-      ($sec,$min,$hour,$day,$mon,$year,$wday,$yday,$isdst)=$date->struct;
-      ($sec,$min,$hour,$day,$mon,$year,$wday,$yday,$isdst)=@{ $date->sref };
-      # !! $year: 0-, $month: 0-11
-
-      $hash=$date->href; # $href can be reused as a constructor
-      print $hash->{year}."-".$hash->{month}. ... $hash->{sec} ... ;
-  
-      %hash=$date->hash;
-      # !! $hash{year}: 1900-, $hash{month}: 1-12
-
-      $date->month_begin  # First day of the month (date object)
-      $date->month_end    # Last day of the month
-      $date->days_in_month # 28..31
+      print date([2001,12,11,4,5,6])->truncate;
+                                   # will print "2001-12-11"
 
       # constructing new date based on an existing one:
       $new_date = $date->clone;
+      $new_date->set( year => 1977, sec => 14);
       $new_date = $date->clone( year => 1977, sec => 14 );
-      # valid keys: year, _year, month, mon, _month, _mon, day, mday, day_of_month,
-      #             hour, min, minute, sec, second, tz
-      # constructing a new date, which is the same as the original, but in 
-      # another timezone:
+
+      # constructing a new date, which is the same absolute time as
+      # the original, but expressed in another timezone:
       $new_date = $date->to_tz('Iceland');
-
-      # changing date format
-      {
-        local $Class::Date::DATE_FORMAT="%Y%m%d%H%M%S";
-        print $date       # result: 20011222000000
-        $Class::Date::DATE_FORMAT=undef;
-        print $date       # result: Thu Oct 13 04:54:34 1994
-        $Class::Date::DATE_FORMAT="%Y/%m/%d"
-        print $date       # result: 1994/10/13
-      }
-
-      # error handling
-      $a = date($date_string);
-      if ($a) { # valid date
-        ...
-      } else { # invalid date
-        if ($a->error == E_INVALID) { ... }
-        print $a->errstr;
-      }
-
-      # adjusting DST in calculations  (see the doc)
-      $Class::Date::DST_ADJUST = 1; # this is the default
-      $Class::Date::DST_ADJUST = 0;
-
-      # "month-border adjust" flag 
-      $Class::Date::MONTH_BORDER_ADJUST = 0; # this is the default
-      print date("2001-01-31")+'1M'; # will print 2001-03-03
-      $Class::Date::MONTH_BORDER_ADJUST = 1;
-      print date("2001-01-31")+'1M'; # will print 2001-02-28
-
-      # date range check
-      $Class::Date::RANGE_CHECK = 0; # this is the default
-      print date("2001-02-31"); # will print 2001-03-03
-      $Class::Date::RANGE_CHECK = 1;
-      print date("2001-02-31"); # will print nothing
-
-      # getting values of a relative date object
-      $reldate;              # reldate in seconds (assumed 1 month = 2_629_744 secs)
-      $reldate->year;
-      $reldate->mon;
-      $reldate->month;       # same as prev.
-      $reldate->day;
-      $reldate->hour;
-      $reldate->min;
-      $reldate->minute;      # same as prev.
-      $reldate->sec;         # same as $reldate
-      $reldate->second;      # same as prev.
-      $reldate->sec_part;    # "second" part of the relative date
-      $reldate->mon_part;    # "month"  part of the relative date
-
-      # arithmetic with dates:
-      print date([2001,12,11,4,5,6])->truncate; 
-                                   # will print "2001-12-11"
-      $new_date = $date+$reldate;
-      $date2    = $date+'3Y 2D';   # 3 Years and 2 days
-      $date3    = $date+[1,2,3];   # $date plus 1 year, 2 months, 3 days
-      $date4    = $date+'3-1-5'    # $date plus 3 years, 1 months, 5 days
-
-      $new_date = $date-$reldate;
-      $date2    = $date-'3Y';      # 3 Yearss
-      $date3    = $date-[1,2,3];   # $date minus 1 year, 2 months, 3 days
-      $date4    = $date-'3-1-5'    # $date minus 3 years, 1 month, 5 days
-
-      $new_reldate = $date1-$date2;
-      $reldate2 = Class::Date->new('2000-11-12')-'2000-11-10';
-      $reldate3    = $date3-'1977-11-10';
-
-      $days_between = (Class::Date->new('2001-11-12')-'2001-07-04')->day;
 
       # comparison between absolute dates
       print $date1 > $date2 ? "I am older" : "I am younger";
@@ -183,69 +62,144 @@ SYNOPSIS
       print date("2001-01-29") + '1M' - '1M'; # gives "2001-02-01"
       print date("2000-02-29") + '1Y' - '1Y'; # gives "2000-03-01"
 
-      # Named interface ($date2 does not necessary to be a Class::Date object)
-      $date1->string;               # same as $date1 in scalar context
-      $date1->subtract($date2);     # same as $date1 - $date2
-      $date1->add($date2);          # same as $date1 + $date2
-      $date1->compare($date2);      # same as $date1 <=> $date2
-
-      $reldate1->sec;               # same as $reldate1 in numeric or scalar context
-      $reldate1->compare($reldate2);# same as $reldate1 <=> $reldate2
-      $reldate1->add($reldate2);    # same as $reldate1 + $reldate2
-      $reldate1->neg                # used for subtraction
-
-      # Disabling Class::Date warnings at load time
-      BEGIN { $Class::Date::WARNINGS=0; }
-      use Class::Date;
-
 DESCRIPTION
-    This module is intended to provide a general-purpose date and datetime
-    type for perl. You have a Class::Date class for absolute date and
-    datetime, and have a Class::Date::Rel class for relative dates.
+    This module is intended to provide a general-purpose date, time and
+    combined date/time type for Perl. You have a Class::Date class for
+    absolute date and date/time, and have a Class::Date::Rel class for
+    relative dates, or *periods*.
 
-    You can use "+", "-", "<" and ">" operators as with native perl data
+    You can use the "+", "-", "<" and ">" operators as with native perl data
     types.
 
 USAGE
-    If you want to use a date object, you need to do the following:
+    Class::Date operations fall into these categories:
 
-      - create a new object
-      - do some operations (+, -, comparison)
-      - get result back
+    *   creating a new date object from some representation of a date
 
-  Creating a new date object
-    You can create a date object by the "date", "localdate" or "gmdate"
-    function, or by calling the Class::Date constructor.
+    *   performing operations on a date object (+, -, comparison)
 
-    "date" and "Class::Date->new" are equivalent, both has two arguments:
-    The date and the timezone.
+    *   getting results, or parts of results back
 
-      $date1= date [2000,11,12];
-      $date2= Class::Date->new([2000,06,11,13,11,22],'GMT');
-      $date2= $date1->new([2000,06,11,13,11,22]);
+Creating a new date object
+    You can create a date object by the "date", "localdate", "gmdate" or
+    "isodate" function, or by calling the "Class::Date->new()" constructor.
 
-    If the timezone information is omitted, then it first check if "new" is
-    called as an object method or a class method. If it is an object method,
-    then it inherits the timezone from the base object, otherwise the
-    default timezone is used ($Class::Date::DEFAULT_TIMEZONE), which is
-    usually set to the local timezone (which is stored in
-    $Class::Date::LOCAL_TIMEZONE). These two variables are set only once to
-    the value, which is returned by the Class::Date::local_timezone()
-    function. You can change these values whenever you want.
+    "date()" and "Class::Date->new()" are equivalent, both have two
+    arguments: The date and (optionally) the timezone.
+
+      $date1 = date [2000,11,12];
+      $date2 = Class::Date->new([2000,06,11,13,11,22],'GMT');
+      $date2 = $date1->new([2000,06,11,13,11,22]);
+
+    note: you cannot simply supply the return from list context
+    "CORE::localtime()" or "CORE::gmtime()" (see "localtime" in perlfunc and
+    "gmtime" in perlfunc) to "Class::Date->new([])"; you would need to add
+    1900 (or possibly 1904) to the year value first, add one to the month,
+    etc. Use the "now()" function, or see below for a more reliable method.
+
+    You can also supply the date information in scalar form, or hashref:
+
+      $date = date("2003-12-31 12:56:59");
+      $date = date("2003-12-31 12:56:59 +12:00");
+      $date = date({ year => 2003, month => 12, day => 31,
+                     hour => 12,   min   => 56, sec => 59 },
+                   'Pacific/Auckland');
+      $date = date   (20031231);     #Thu Aug 20 20:13:51 1970
+      $date = isodate("20031231");   #Wed Dec 31  0:00:00 2003
+
+    See "Valid Date Formats" for more information on the allowable formats
+    of the date.
+
+    Dates may be *cloned* using the constructor, or the "clone()" method:
+
+      $date2 = $date->new();
+      $date2 = $date->clone();
+      $date2 = $date->clone( year => $year,  sec => $sec );
+
+  How the Timezone is determined
+    When constructing a new date from scratch, if the timezone information
+    is omitted, then the date is "floating" (unless you set
+    $Class::Date::DEFAULT_TIMEZONE).
+
+    If the date is being extracted from the system clock, then it always has
+    a time zone set.
+
+    You can override this behaviour to always assume the local time zone, by
+    setting $Class::Date::DEFAULT_TIMEZONE to $Class::Date::LOCAL_TIMEZONE.
+    This behaviour mimics the behaviour of earlier versions (1.1.x and
+    below).
 
     "localdate $x" is equivalent to "date $x, $Class::Date::LOCAL_TIMEZONE",
-    "gmdate $x" is equivalent to "date $x, $Class::Date::GMT_TIMEZONE".
+    and "gmdate $x" is equivalent to "date $x, 'UTC'"
 
-    $Class::Date::GMT_TIMEZONE is set to 'GMT' by default.
-
-      $date1= localdate [2000,11,12];
-      $date2= gmdate [2000,4,2,3,33,33];
+      $date1 = localdate [2000,11,12];
+      $date2 = gmdate [2000,4,2,3,33,33];
 
       $date = localdate(time);
 
-    The format of the accepted input date can be:
+    The *time offset* can also be specified in ISO-8601 notation; however it
+    is still specifying a fixed point in time, rather than a floating time.
 
-    [$year,$month,$day,$hour,$min,$sec]
+      $date = date("2001-01-17 10:10:00 +12:00");
+      print $date->tz;   # prints "+12:00"
+
+      print date("2001-01-17 10:10:00 +02:00")
+                 ->to_tz("Pacific/Auckland");
+        # prints "2001-01-17 21:10:00 +13:00"
+
+  Valid Date Formats
+    ISO-8601 formats (scalar)
+        All ISO-8601 formats (but see "BUGS AND LIMITATIONS") are supported
+        for the scalar use; for example:
+
+        Dates:
+
+          YY               (iso only)
+          -MM
+          --DD
+          YY-MM
+          YYYY             (iso only)
+          YYDDD            (iso only)
+          YY-DDD
+          YYYYMM           (iso only)
+          YYYY-MM
+          YYYYDDD          (iso only)
+          YYYYMMDD         (iso only)
+          YY-MM-DD
+          YYYY-MM-DD
+          YYYYWNN
+          YYYYWNND
+
+        (note: the W is a literal "W" or "w", and is for specifying the week
+        of the year, then 01 to 54).
+
+        Times (must be preceded/seperated from the date with a literal "T"
+        or "t" where ambiguous with the above forms, or follow a complete
+        date with a space):
+
+          HH
+          HH.HHH...
+          HH,HHH...
+          HH:MM
+          HHMM
+          HH:MM.MMM...
+          HH:MM,MMM...
+          HH:MM:SS
+          HHMMSS
+          HH:MM:SS.SSS...
+          HH:MM:SS,SSS...
+
+    973897262
+        A valid 32-bit integer: This is parsed as a unix time.
+
+        However, this is ambiguous with compact ISO-8601 date forms above.
+        To resolve this ambiguity, unix epoch seconds take precedence with
+        "new()" and "date()" constructors, but not the "isodate()"
+        constructor.
+
+          $date = date(time());
+
+    [$year, $month, $day, $hour, $min, $sec]
         An array reference with 6 elements. The missing elements have
         default values (year: 2000, month, day: 1, hour, min, sec: 0)
 
@@ -253,24 +207,103 @@ USAGE
     $min, sec => $sec }
         A hash reference with the same 6 elements as above.
 
-    "YYYYMMDDhhmmss"
-        A mysql-style timestamp value, which consist of at least 14 digit.
-
-    "973897262"
-        A valid 32-bit integer: This is parsed as a unix time.
-
-    "YYYY-MM-DD hh:mm:ss"
-        A standard ISO(-like) date format. Additional ".fraction" part is
-        ignored, ":ss" can be omitted.
-
     additional input formats
         You can specify "-DateParse" as an import parameter, e.g:
 
           use Class::Date qw(date -DateParse);
 
-        With this, the module will try to load Date::Parse module, and if it
-        find it then all these formats can be used as an input. Please refer
-        to the Date::Parse documentation.
+        With this, the module will try to load Date::Parse, and if it find
+        it then all these formats can be used as an input. ()
+
+        This means, that with a little extra compile-time and at slightly
+        slower rates, you can parse dates with formats like these:
+
+           1995:01:24T09:08:17.1823213           ISO-8601
+           1995-01-24T09:08:17.1823213
+           Wed, 16 Jun 94 07:29:35 CST           Comma and day name are optional
+           Thu, 13 Oct 94 10:13:13 -0700
+           Wed, 9 Nov 1994 09:50:32 -0500 (EST)  Text in ()'s will be ignored.
+           21 dec 17:05
+           21-dec 17:05
+           21/dec 17:05
+           21/dec/93 17:05
+           1999 10:02:18 "GMT"
+           16 Nov 94 22:28:20 PST
+
+        See Date::Parse for more.
+
+  Extracting out Parts of a Date Object
+    A wide variety of methods are exported, to be able to extract out the
+    fields in slightly different ways:
+
+      # quick "outs"
+      $date->hms          # 01:23:45
+      $date->ymd          # 2000/02/29
+      $date->mdy          # 02/29/2000
+      $date->dmy          # 29/02/2000
+
+      # all others, just make up a sub name, this will leave a
+      # compiled sub to 
+
+      $date->YmdHMS
+
+      $date->string       # 2000-02-29 12:21:11 (format can be changed, look below)
+      "$date"             # same as prev.
+      # getting values of an absolute date object
+      $date;              # prints the date in default output format (see below)
+      $date->yr;          # 2-digit year 0-99, e.g 1
+      $date->year;        # year, e.g: 2001
+      $date->_year;       # C year (year - 1900 on Unix), e.g. 101
+
+      $date->mon;         # month 1..12
+      $date->month;       # same as prev.
+      $date->_mon;        # month 0..11
+      $date->_month;      # same as prev.
+
+      $date->mday;        # day of month
+      $date->day;         # day of month
+      $date->day_of_month;# same as prev.
+
+      $date->wday;        # 1 = Sunday
+      $date->_wday;       # 0 = Sunday
+      $date->day_of_week; # same as prev.
+
+      $date->hour;
+      $date->min;
+      $date->minute;      # same as prev.
+      $date->sec;
+      $date->second;      # same as prev.
+      $date->yday;        
+      $date->day_of_year; # same as prev.
+      $date->isdst;       # DST?
+      $date->daylight_savings; # same as prev.
+      $date->epoch;       # UNIX time_t
+      $date->monname;     # name of month, eg: March
+      $date->monthname;   # same as prev.
+      $date->wdayname;    # Thursday
+      $date->day_of_weekname # same as prev.
+
+      $date->tzoffset     # timezone-offset, eg: +12
+      $date->strftime($format) # POSIX strftime (without the huge POSIX.pm)
+      $date->tz           # returns the base timezone as you specify, eg: CET
+      $date->tzdst        # returns the real timezone with dst information, eg: CEST
+
+      # !! $year: 1900-, $month: 1-12
+      ($year,$month,$day,$hour,$min,$sec)=@{ $date->aref };
+
+      # !! $year: 0-, $month: 0-11
+      ($sec,$min,$hour,$day,$mon,$year,$wday,$yday,$isdst)=$date->struct;
+      ($sec,$min,$hour,$day,$mon,$year,$wday,$yday,$isdst)=@{ $date->sref };
+
+      $hash=$date->href; # $href can be reused as a constructor
+      print $hash->{year}."-".$hash->{month}. ... $hash->{sec} ... ;
+  
+      %hash=$date->hash;
+      # !! $hash{year}: 1900-, $hash{month}: 1-12
+
+      $date->month_begin  # First day of the month (date object)
+      $date->month_end    # Last day of the month
+      $date->days_in_month # 28..31
 
   Operations
     addition
@@ -290,6 +323,14 @@ USAGE
           $date= date('2001-12-11')+'3Y';
 
         You can provide a Class::Date::Rel object in the following form:
+
+          $reldate = new Class::Date::Rel [$YYYY,$mm,$dd,$HH,$MM,$SS];
+          $reldate = new Class::Date::Rel
+               { year => $year, month => $month, day => $day,
+                 hour => $hour, min   => $min,   sec => $sec };
+
+          $reldate = new Class::Date::Rel "2001-11-12 07:13:12";
+          $reldate = new Class::Date::Rel "2001-12-11";
 
         array ref
             The same format as seen in Class::Date format, except the
@@ -376,6 +417,60 @@ USAGE
         destination timezone.
 
     Operations with Class::Date::Rel
+          # creating relative date object (a "Period")
+          # (normally you don't need to create this object explicitly)
+          $reldate = new Class::Date::Rel "3Y 1M 3D 6h 2m 4s";
+          $reldate = new Class::Date::Rel "P3Y1M3DT6H2M4S";  # ISO-8601
+          $reldate = new Class::Date::Rel "6Y";
+          $reldate = new Class::Date::Rel $secs;  # secs
+          # or any format supported by `Class::Date->new'
+
+          # getting values of a relative date object
+          $reldate;              # reldate in seconds (assumed 1 month = 2_629_744 secs)
+          $reldate->year;
+          $reldate->mon;
+          $reldate->month;       # same as prev.
+          $reldate->day;
+          $reldate->hour;
+          $reldate->min;
+          $reldate->minute;      # same as prev.
+          $reldate->sec;         # same as $reldate
+          $reldate->second;      # same as prev.
+          $reldate->sec_part;    # "second" part of the relative date
+          $reldate->mon_part;    # "month"  part of the relative date
+
+          # arithmetic with dates:
+          print date([2001,12,11,4,5,6])->truncate; 
+                                       # will print "2001-12-11"
+          $new_date = $date+$reldate;
+          $date2    = $date+'3Y 2D';   # 3 Years and 2 days
+          $date3    = $date+[1,2,3];   # $date plus 1 year, 2 months, 3 days
+          $date4    = $date+'3-1-5'    # $date plus 3 years, 1 months, 5 days
+
+          $new_date = $date-$reldate;
+          $date2    = $date-'3Y';      # 3 Yearss
+          $date3    = $date-[1,2,3];   # $date minus 1 year, 2 months, 3 days
+          $date4    = $date-'3-1-5'    # $date minus 3 years, 1 month, 5 days
+
+          $new_reldate = $date1-$date2;
+          $reldate2 = Class::Date->new('2000-11-12')-'2000-11-10';
+          $reldate3    = $date3-'1977-11-10';
+
+          # Named interface ($date2 does not necessary to be a Class::Date object)
+          $date1->string;               # same as $date1 in scalar context
+          $date1->subtract($date2);     # same as $date1 - $date2
+          $date1->add($date2);          # same as $date1 + $date2
+          $date1->compare($date2);      # same as $date1 <=> $date2
+
+          $reldate1->sec;               # same as $reldate1 in numeric or scalar context
+          $reldate1->compare($reldate2);# same as $reldate1 <=> $reldate2
+          $reldate1->add($reldate2);    # same as $reldate1 + $reldate2
+          $reldate1->neg                # used for subtraction
+
+          # Disabling Class::Date warnings at load time
+          BEGIN { $Class::Date::WARNINGS=0; }
+          use Class::Date;
+
         The Class::Date::Rel object consists of a month part and a day part.
         Most people only use the "day" part of it. If you use both part,
         then you can get these parts with the "sec_part" and "mon_part"
@@ -399,10 +494,49 @@ USAGE
     you want to access parts of the data which is stored in a Class::Date
     and Class::Date::Rel object.
 
+  Configuration Variables
+      # configuring the `stringify' date format
+      {
+        local $Class::Date::DATE_FORMAT="%Y%m%d%H%M%S";
+        print $date       # result: 20011222000000
+        $Class::Date::DATE_FORMAT=undef;
+        print $date       # result: Thu Oct 13 04:54:34 1994
+        $Class::Date::DATE_FORMAT="%Y/%m/%d"
+        print $date       # result: 1994/10/13
+      }
+
+      # adjusting DST in calculations  (see the doc)
+      $Class::Date::DST_ADJUST = 1; # this is the default
+      $Class::Date::DST_ADJUST = 0;
+
+      # "month-border adjust" flag 
+      $Class::Date::MONTH_BORDER_ADJUST = 0; # this is the default
+      print date("2001-01-31")+'1M'; # will print 2001-03-03
+      $Class::Date::MONTH_BORDER_ADJUST = 1;
+      print date("2001-01-31")+'1M'; # will print 2001-02-28
+
+      # date range check
+      $Class::Date::RANGE_CHECK = 0; # this is the default
+      print date("2001-02-31"); # will print 2001-03-03
+      $Class::Date::RANGE_CHECK = 1;
+      print date("2001-02-31"); # will print nothing
+
   Error handling
     If a date object became invalid, then the object will be reblessed to
     Class::Date::Invalid. This object is false in boolean environment, so
     you can test the date validity like this:
+
+      # error handling
+      {
+        use Class::Date qw(:errors date);
+        $a = date($date_string);
+        if ($a) { # valid date
+          ...
+        } else { # invalid date
+          if ($a->error == E_INVALID) { ... }
+          print $a->errstr;
+        }
+      }
 
       $a = date($input_date);
       if ($a) { # valid date
@@ -609,10 +743,31 @@ SPEED ISSUES
     slower. If you don't need them, switch them off to achieve faster
     calculations.
 
-    In general, if you really need fast date and datetime calculation, don't
-    use this module. As you see in the previous section, the focus of
-    development is not the speed in 1.0. For fast date and datetime
-    calculations, use Date::Calc module instead.
+    In general, if you really need *fast* date and datetime calculation,
+    don't use this module. As you see in the previous section, the focus of
+    development is not the speed in 1.0. For ultra-fast date and datetime
+    calculations (but no string date/time parsing, and no concept of a Date
+    object), use the Date::Calc module instead.
+
+    [ Later contributor's note: As it turns out, I found this module to be
+    the fastest module on CPAN that supports a date object ]
+
+    If *speed, memory and disk space consumption is no object* - and you
+    *enjoy installing new modules* to interpret very straightforward time
+    formats really, then you're better off with DateTime. As an added bonus,
+    you can get clean plug-ins to convert dates to the Klingon calendar and
+    for some definition of 'correct', correctly handle all anomalies in the
+    calendar, such as leap seconds and "the fortnight that didn't exist" in
+    1582 (if you were a catholic, anyway). It also apparently has a "Clean
+    API", according to the author - and a fine cargo cult following (enter
+    "cargo cult programming" to <http://www.dictionary.com> for an
+    explanation of the term).
+
+    If *run-time memory consumption* is your primary concern, you still
+    can't really look past the good ol' (that's Perl speak for old and
+    crusty) Date::Manip module. It might take almost as long as DateTime to
+    parse dates (and even longer (gasp!) for some) - but its simple ISO-8601
+    in-memory representation sure is compact.
 
 BUGS AND LIMITATIONS
     *   I cannot manage to get the timezone code working properly on
@@ -663,6 +818,16 @@ BUGS AND LIMITATIONS
         error message in this case. It however works in the same way if you
         change other fields than "year" to an invalid field.
 
+    *   Unfortunately, the ISO-8601 standards document is not free, and so
+        it is possible that some valid ISO-8601 formats are not understood
+        by this module. For bibliography's sake, the information on these
+        two sites were the primary consult:
+
+        <http://www.cl.cam.ac.uk/~mgk25/iso-time.html>
+
+        <http://www.mcs.vuw.ac.nz/technical/software/SGML/doc/iso8601/ISO860
+        1.html>
+
 SUPPORT
     Class::Date is free software. IT COMES WITHOUT WARRANTY OF ANY KIND.
 
@@ -695,7 +860,7 @@ WIN32 notes
     time you just run the 'install'.
 
 COPYRIGHT
-    Copyright (c) 2001 SzabÛ, Bal·zs (dLux)
+    Copyright (c) 2001 SzabÅÛ, BalÅ·zs (dLux)
 
     All rights reserved. This program is free software; you can redistribute
     it and/or modify it under the same terms as Perl itself.
@@ -703,16 +868,28 @@ COPYRIGHT
     Portions Copyright (c) Matt Sergeant
 
 AUTHOR
-      dLux (SzabÛ, Bal·zs) <dlux@dlux.hu>
+      dLux (SzabÅÛ, BalÅ·zs) <dlux@dlux.hu>
 
 CREDITS
-      - Matt Sergeant <matt@sergeant.org>
-        (Lots of code are borrowed from the Time::Object module)
-      - Tatsuhiko Miyagawa <miyagawa@cpan.org> (bugfixes)
-      - Stas Bekman <stas@stason.org> (suggestions, bugfix)
-      - Chris Winters <chris@cwinters.com> (win32 .ppd version)
-      - Benoit Beausejour <bbeausej@pobox.com>
-        (Parts of the timezone code is borrowed from his Date::Handler module)
+    Matt Sergeant <matt@sergeant.org>
+        Lots of code are borrowed from the Time::Object module.
+
+    Tatsuhiko Miyagawa <miyagawa@cpan.org>
+        (bugfixes)
+
+    Stas Bekman <stas@stason.org>
+        (suggestions, bugfix)
+
+    Chris Winters <chris@cwinters.com>
+        (win32 .ppd version)
+
+    Benoit Beausejour <bbeausej@pobox.com>
+        Parts of the timezone code is borrowed from his Date::Handler
+        module.
+
+    Sam Vilain <samv@cpan.org>
+        ISO-8601 support, and various manual page enhancements including the
+        snide comments about the DateTime module.
 
 SEE ALSO
     perl(1). Date::Calc(3pm). Time::Object(3pm). Date::Handler(3pm).

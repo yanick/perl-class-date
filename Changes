@@ -1,5 +1,9 @@
 Revision history for Perl extension Class::Date.
 
+1.1.7_01 Sun Jul 18 14:22:28 NZST 2004
+	- Converted test scripts to use Test::More for legibility and
+	  ease of continued development
+
 1.1.7   Wed Aug 20 23:16:29 CEST 2003
 	- Bugfix in Date::Parse support
 

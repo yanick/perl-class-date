@@ -95,7 +95,7 @@ $LOCAL_TIMEZONE = $DEFAULT_TIMEZONE = local_timezone();
 use constant ClassDateRel => "Class::Date::Rel";
 use constant ClassDateInvalid => "Class::Date::Invalid";
 
-use overload 
+use overload
   '""'     => "string",
   '-'      => "subtract",
   '+'      => "add",

@@ -1,8 +1,8 @@
 Changes
-Date.pm
-Date.pod
+lib/Class/Date.pm
+lib/Class/Date.pod
 Date.xs
-Date/Const.pm
+lib/Class/Date/Const.pm
 MANIFEST
 MANIFEST.SKIP
 Makefile.PL
@@ -12,3 +12,5 @@ t/10_fields.t
 t/20_gmdate.t
 t/30_localdate.t
 t/40_errors.t
+t/50_timezone.t
+META.yml                                 Module meta-data (added by MakeMaker)

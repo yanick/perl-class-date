@@ -1,28 +1,28 @@
-use Test;
-use strict;
-BEGIN { 
-  plan tests => 11;
-};
-use Class::Date qw(date gmdate);
+#   -*- perl -*-
+
+use Test::More tests => 11;
+
+BEGIN { use_ok("Class::Date", qw(date gmdate)); }
 
 $Class::Date::DST_ADJUST=1;
 
-ok(1);
-
 # Class::Date::new
 
+# warning - time zone codes considered harmful, eg Australia use the
+# same TimeZone as Eastern US for one of their time zones.  Stick to
+# rfc822 codes on input only.
 my $date1=Class::Date->new([2002,05,04,0,1,2],'CET');
-ok $date1, "2002-05-04 00:01:02";
-ok $date1->tz, 'CET';
-ok $date1->tzdst, 'CEST';
-ok $date1->epoch, 1020463262;
+is $date1, "2002-05-04 00:01:02",	"->new([],'tz')";
+is $date1->tz, 'CET',			"->tz";
+is $date1->tzdst, 'CEST',		"->tzdst";
+is $date1->epoch, 1020463262,		"->epoch";
 
 my $date2 = $date1->to_tz('GMT');
-ok $date2, "2002-05-03 22:01:02";
-ok $date2->tz, 'GMT';
-ok $date2->tzdst, 'GMT';
-ok $date1->epoch, 1020463262;
+is $date2, "2002-05-03 22:01:02",	"->to_tz('')";
+is $date2->tz, 'GMT',			"->tz";
+is $date2->tzdst, 'GMT',		"->tzdst";
+is $date1->epoch, 1020463262,		"->epoch";
 
 my $date3 = $date1->clone(tz => 'GMT');
-ok $date3->epoch, 1020470462;
-ok $date3, gmdate([2002,05,04,0,1,2]);
+is $date3->epoch, 1020470462,		"->clone(tz => '') doesn't convert TZ";
+is $date3, gmdate([2002,05,04,0,1,2]),  "it just changes the recorded zone";

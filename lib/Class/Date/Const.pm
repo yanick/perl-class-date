@@ -53,10 +53,12 @@ while (@ERRORS) {
     $c++;
 }
 
-@EXPORT = (keys %FIELDS, qw(@ERROR_MESSAGES) @{$EXPORT_TAGS{errors}});
+@EXPORT = (keys %FIELDS, qw(@ERROR_MESSAGES), @{$EXPORT_TAGS{errors}});
 
 # exporting a symbol like this can have side effects, so you have to
 # ask for it.
 @EXPORT_OK = qw(%EXPORT_TAGS);
+
+$EXPORT_TAGS{all} = [ @EXPORT, @EXPORT_OK ];
 
 1;

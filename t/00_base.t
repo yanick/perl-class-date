@@ -1,21 +1,13 @@
-print "1..6\n";
+#  -*- perl -*-
 
-use Class::Date qw(now gmdate);
-print "ok 1\n";
+use Test::More tests => 6;
+
+BEGIN { use_ok("Class::Date", qw(now gmdate)); };
 
 my $t = gmdate(315532800); # 00:00:00 1/1/1980
 
-print "not " if ($t->year != 1980);
-print "ok 2\n";
-
-print "not " if ($t->hour);
-print "ok 3\n";
-
-print "not " if ($t->mon != 1);
-print "ok 4\n";
-
-print "not " unless now>"1970-1-1";
-print "ok 5\n";
-
-print "not " unless gmdate("now")>"1970-1-1";
-print "ok 6\n";
+is($t->year, 1980, "->year()");
+is($t->hour, 0,    "->hour()");
+is($t->mon, 1,      "->mon()");
+cmp_ok(now, ">", "1970-1-1", "overloaded date compare");
+cmp_ok(gmdate("now"), ">",  "1970-1-1", "overloaded date compare");
