@@ -219,7 +219,7 @@ sub new_from_scalar_internal { my ($s,$time,$tz) = @_;
     $obj->_recalc_from_epoch;
     return $obj;
   } elsif ($time =~ m{ ^\s* ( \d{0,4} ) - ( \d\d? ) - ( \d\d? ) 
-     ( \s+ ( \d\d? ) : ( \d\d? ) ( : ( \d\d?  ) (\.\d+)?)? )? }x) {
+     ( (?:T|\s+) ( \d\d? ) : ( \d\d? ) ( : ( \d\d?  ) (\.\d+)?)? )? }x) {
     my ($y,$m,$d,$hh,$mm,$ss)=($1,$2,$3,$5,$6,$8);
     # ISO(-like) date
     return $s->new_from_array([$y,$m,$d,$hh,$mm,$ss],$tz);
