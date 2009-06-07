@@ -1,5 +1,5 @@
 package Class::Date;
-# $Id$
+# $Id: Date.pm 129 2006-05-14 20:50:22Z dlux $
 
 require 5.005_03;
 
@@ -34,7 +34,7 @@ BEGIN {
     @EXPORT_OK = (qw( date localdate gmdate now @ERROR_MESSAGES), 
         @{$EXPORT_TAGS{errors}});
 
-    $VERSION = '1.1.7';
+    $VERSION = '1.1.9';
     eval { Class::Date->bootstrap($VERSION); };
     if ($@) {
         warn "Cannot find the XS part of Class::Date, \n".
@@ -58,10 +58,12 @@ sub _set_tz { my ($tz) = @_;
     my $lasttz = $ENV{TZ};
     if (!defined $tz || $tz eq $NOTZ_TIMEZONE) {
         # warn "_set_tz: deleting TZ\n";
-        delete $ENV{TZ}
+        delete $ENV{TZ};
+        Env::C::unsetenv('TZ') if exists $INC{"Env/C.pm"};
     } else {
         # warn "_set_tz: setting TZ to $tz\n";
         $ENV{TZ} = $tz;
+        Env::C::setenv('TZ', $tz) if exists $INC{"Env/C.pm"};
     }
     tzset_xs();
     return $lasttz;
@@ -115,11 +117,18 @@ sub import {
   foreach my $symbol (@_) {
     if ($symbol eq '-DateParse') {
       if (!$Class::Date::DateParse++) {
-        if ( eval { require Date::Parse} ) {
+        if ( eval { require Date::Parse } ) {
             push @NEW_FROM_SCALAR,\&new_from_scalar_date_parse;
         } else {
-            warn "Date::Parse is not available but requested by Class::Date\n" 
+            warn "Date::Parse is not available, although it is requested by Class::Date\n" 
                 if $WARNINGS;
+        }
+      }
+    } elsif ($symbol eq '-EnvC') {
+      if (!$Class::Date::EnvC++) {
+        if ( !eval { require Env::C } ) {
+          warn "Env::C is not available, although it is requested by Class::Date\n"
+            if $WARNINGS;
         }
       }
     } else {
@@ -219,7 +228,7 @@ sub new_from_scalar_internal { my ($s,$time,$tz) = @_;
     $obj->_recalc_from_epoch;
     return $obj;
   } elsif ($time =~ m{ ^\s* ( \d{0,4} ) - ( \d\d? ) - ( \d\d? ) 
-     ( (?:T|\s+) ( \d\d? ) : ( \d\d? ) ( : ( \d\d?  ) (\.\d+)?)? )? }x) {
+     ( \s+ ( \d\d? ) : ( \d\d? ) ( : ( \d\d?  ) (\.\d+)?)? )? }x) {
     my ($y,$m,$d,$hh,$mm,$ss)=($1,$2,$3,$5,$6,$8);
     # ISO(-like) date
     return $s->new_from_array([$y,$m,$d,$hh,$mm,$ss],$tz);
@@ -379,7 +388,17 @@ sub _set_invalid { my ($s,$error,$errmsg) = @_;
     return $s;
 }
 
-sub hms      { sprintf('%02d:%02d:%02d', @{ shift() }[c_hour,c_min,c_sec]) }
+sub ampm { my ($s) = @_;
+    return $s->[c_hour] < 12 ? "AM" : "PM"; 
+}
+
+sub meridiam { my ($s) = @_;
+    my $hour = $s->[c_hour] % 12;
+    if( $hour == 0 ) { $hour = 12; }
+    sprintf('%02d:%02d %s', $hour, $s->[c_min], $s->ampm);
+}
+
+sub hms { sprintf('%02d:%02d:%02d', @{ shift() }[c_hour,c_min,c_sec]) }
 
 sub ymd { my ($s)=@_;
   sprintf('%04d/%02d/%02d', $s->year, $s->mon, $s->[c_day])

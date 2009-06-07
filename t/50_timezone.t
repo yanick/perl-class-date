@@ -4,6 +4,7 @@ BEGIN {
   plan tests => 11;
 };
 use Class::Date qw(date gmdate);
+eval { require Env::C };
 
 $Class::Date::DST_ADJUST=1;
 
