@@ -1,2 +1,4 @@
+# Add '%include ../.hgrc-snippet' to $REPO/.hg/hgrc
 [keyword]
 Date.pm = 
+Date.xs = 
