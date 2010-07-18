@@ -1,5 +1,5 @@
 package Class::Date;
-# $Id: Date.pm 129 2006-05-14 20:50:22Z dlux $
+# $Id$
 
 require 5.005_03;
 
@@ -33,7 +33,7 @@ BEGIN {
     @EXPORT_OK = (qw( date localdate gmdate now @ERROR_MESSAGES), 
         @{$EXPORT_TAGS{errors}});
 
-    $VERSION = '1.1.9';
+    $VERSION = '1.1.10';
     eval { Class::Date->bootstrap($VERSION); };
     if ($@) {
         warn "Cannot find the XS part of Class::Date, \n".
