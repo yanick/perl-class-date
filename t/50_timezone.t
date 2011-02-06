@@ -27,22 +27,3 @@ ok $date1->epoch, 1020463262;
 my $date3 = $date1->clone(tz => 'GMT');
 ok $date3->epoch, 1020470462;
 ok $date3, gmdate([2002,05,04,0,1,2]);
-
-my $date4 = $date
-$date1 = date [2010,10,3, 1,0, 0], 'Australia/Sydney';
-
-for (1..20) {
-
-   $date1 += '15m';
-
-      foreach $date ( $date1  ){
-
-            print join(' , ', $date->string, $date->tz,  $date->tzoffset,
-	    $date->isdst );
-
-	          print "\n";
-
-		     }
-
-		     }
-
