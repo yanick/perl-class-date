@@ -1,7 +1,7 @@
 package Class::Date;
 # $Id: Date.pm,v 8dbcc6b6035d 2008/11/23 00:41:11 dlux $
 
-require 5.005_03;
+use 5.006;
 
 use strict;
 use vars qw(
