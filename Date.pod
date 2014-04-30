@@ -807,6 +807,10 @@ Portions Copyright (c) Matt Sergeant
 
   dLux (Szabó, Balázs) <dlux@dlux.hu>
 
+=head1 MAINTAINER
+
+   L<Gabor Szabo|http://szabgab.com/>
+
 =head1 CREDITS
 
   - Matt Sergeant <matt@sergeant.org>
