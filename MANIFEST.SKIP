@@ -1,3 +1,12 @@
 test
 TODO.txt
 MANIFEST.SKIP
+\.hg
+blib/
+Class-Date-
+Date.o
+Date.bs
+Date.c
+\.bak
+pm_to_blib
+Makefile
