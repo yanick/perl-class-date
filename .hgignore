@@ -3,3 +3,7 @@ Makefile
 pm_to_blib
 Date\.(c|bs|o)
 .*\.tar\.gz
+MANIFEST
+MANIFEST.bak
+MYMETA.json
+MYMETA.yml
