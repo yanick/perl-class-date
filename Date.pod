@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 Class::Date - Class for easy date and time manipulation
@@ -794,7 +796,7 @@ you just run the 'install'.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001 SzabÛ, Bal·zs (dLux)
+Copyright (c) 2001 Szab√≥, Bal√°zs (dLux)
 
 All rights reserved. This program is free software; you can redistribute it 
 and/or modify it under the same terms as Perl itself.
@@ -803,7 +805,7 @@ Portions Copyright (c) Matt Sergeant
 
 =head1 AUTHOR
 
-  dLux (SzabÛ, Bal·zs) <dlux@dlux.hu>
+  dLux (Szab√≥, Bal√°zs) <dlux@dlux.hu>
 
 =head1 CREDITS
 
