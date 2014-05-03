@@ -1,5 +1,6 @@
 Revision history for Perl extension Class::Date.
 
+    - Require Scalar::Util and remove work-around lack of Scalar::Util
     - Require Env::C
 
 1.1.13 Fri May  2 08:32:15 2014
