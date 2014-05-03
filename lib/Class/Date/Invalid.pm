@@ -4,6 +4,8 @@ use warnings;
 
 use Class::Date::Const;
 
+our $VERSION = '1.1.14';
+
 use overload 
   '0+'     => "zero",
   '""'     => "empty",
