@@ -28,7 +28,7 @@ WriteMakefile(
            'Gabor Szabo <szabgab@cpan.org>',
        ],
     },
-    dist              => { 
-        PREOP => $^X.' -MPod::Text -e "pod2text(q(Date.pod))" > README'
-    }
+#    dist              => { 
+#        PREOP => $^X.' -MPod::Text -e "pod2text(q(Date.pod))" > README'
+#    }
 )
