@@ -4,8 +4,8 @@ use ExtUtils::MakeMaker;
 use 5.006;
 WriteMakefile(
     NAME          => 'Class::Date',
-    VERSION_FROM  => 'Date.pm',
-    ABSTRACT_FROM => 'Date.pod',
+    VERSION_FROM  => 'lib/Class/Date.pm',
+    ABSTRACT_FROM => 'lib/Class/Date.pod',
     AUTHOR        => 'Balazs Szabo (dLux)',
     LICENSE       => 'perl',
     MIN_PERL_VERSION => 5.006,
