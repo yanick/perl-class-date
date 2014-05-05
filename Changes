@@ -1,5 +1,7 @@
 Revision history for Perl extension Class::Date.
 
+    - Don't require Env::C  due to RT #95332
+
 1.1.14 Sat May  3 11:02:33 2014
 
     - Move Date/Const.pm to lib/Calss/Date/
