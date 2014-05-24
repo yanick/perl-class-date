@@ -157,5 +157,6 @@ Revision history for Perl extension Class::Date.
     - A severe bug fixed concerning the Daylight Saving Time
     - Dependency to POSIX.pm has been removed
 
-0.5 Initial release
+0.5 2001-03-12
+    - Initial release
 
