@@ -1,6 +1,5 @@
 requires "Carp" => "0";
 requires "Date::Parse" => "0";
-requires "DynaLoader" => "0";
 requires "Env::C" => "0";
 requires "Exporter" => "0";
 requires "POSIX" => "0";

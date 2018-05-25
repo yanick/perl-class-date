@@ -14,40 +14,27 @@ use vars qw(
 use Carp;
 
 use Exporter;
-use DynaLoader;
 use Time::Local;
 use Class::Date::Const;
 use Scalar::Util qw(blessed);
+use POSIX;
 
 use Class::Date::Rel;
 use Class::Date::Invalid;
 
 BEGIN { 
     $WARNINGS = 1 if !defined $WARNINGS;
-    if ($] > 5.006) {
-        *timelocal = *Time::Local::timelocal_nocheck;
-        *timegm = *Time::Local::timegm_nocheck;
-    } else {
-        *timelocal = *Time::Local::timelocal;
-        *timegm = *Time::Local::timegm;
-    }
+    *timelocal = *Time::Local::timelocal_nocheck;
+    *timegm = *Time::Local::timegm_nocheck;
 
-    @ISA=qw(DynaLoader Exporter);
+    @ISA=qw(Exporter);
     %EXPORT_TAGS = ( errors => $Class::Date::Const::EXPORT_TAGS{errors});
     @EXPORT_OK = (qw( date localdate gmdate now @ERROR_MESSAGES), 
         @{$EXPORT_TAGS{errors}});
 
-    our $VERSION = '1.1.15';
-    eval { Class::Date->bootstrap($VERSION); };
-    if ($@) {
-        warn "Cannot find the XS part of Class::Date, \n".
-            "   using strftime, tzset and tzname from POSIX module.\n"
-                if $WARNINGS;
-        require POSIX;
-        *strftime_xs = *POSIX::strftime;
-        *tzset_xs = *POSIX::tzset;
-        *tzname_xs = *POSIX::tzname;
-    }
+    *strftime_xs = *POSIX::strftime;
+    *tzset_xs = *POSIX::tzset;
+    *tzname_xs = *POSIX::tzname;
 }
 
 $GMT_TIMEZONE = 'GMT';
