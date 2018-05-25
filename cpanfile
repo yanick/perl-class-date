@@ -1,6 +1,5 @@
 requires "Carp" => "0";
 requires "Date::Parse" => "0";
-requires "DynaLoader" => "0";
 requires "Env::C" => "0";
 requires "Exporter" => "0";
 requires "POSIX" => "0";
@@ -12,10 +11,6 @@ requires "perl" => "5.006";
 requires "strict" => "0";
 requires "vars" => "0";
 requires "warnings" => "0";
-
-on 'build' => sub {
-  requires "Module::Build" => "0.28";
-};
 
 on 'test' => sub {
   requires "ExtUtils::MakeMaker" => "0";
@@ -31,7 +26,7 @@ on 'test' => sub {
 };
 
 on 'configure' => sub {
-  requires "Module::Build" => "0.28";
+  requires "ExtUtils::MakeMaker" => "0";
 };
 
 on 'develop' => sub {

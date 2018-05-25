@@ -1,4 +1,3 @@
-Build.PL
 CONTRIBUTORS
 Changes
 INSTALL
@@ -6,13 +5,13 @@ LICENSE
 MANIFEST
 META.json
 META.yml
+Makefile.PL
 README
 README.mkdn
 SIGNATURE
 cpanfile
 doap.xml
 lib/Class/Date.pm
-lib/Class/Date.xs
 lib/Class/Date/Const.pm
 lib/Class/Date/Invalid.pm
 lib/Class/Date/Rel.pm
