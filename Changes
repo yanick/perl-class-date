@@ -4,6 +4,7 @@ Revision history for Class::Date
     - Remove the xs part of the distribution, which 
         was not adding much for the extra pain.
     - Quiet spurious warning. (GH#9)
+    - Fix typos in documentation. (GH#5)
 
 1.1.15 Mon May  5 06:18:37 2014
     - Don't require Env::C  due to RT #95332
