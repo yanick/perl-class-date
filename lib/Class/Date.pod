@@ -593,7 +593,7 @@ method. Note this value returns the timezone as you specify, so if you
 create the object with an unknown timezone, you will get this back. If you
 want to query the effective timezone, you can call the $date->tzdst method.
 This method returns only valid timezones, but it is not necessarily the
-timezone, which can be used to create a new object. For example
+timezone which can be used to create a new object. For example
 $date->tzdst can return 'CEST', which is not a valid base timezone, because
 it contains daylight savings information also. On Linux systems, you can
 see the possible base timezones in the /usr/share/zoneinfo directory.
