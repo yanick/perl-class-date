@@ -26,5 +26,6 @@ t/20_gmdate.t
 t/30_localdate.t
 t/40_errors.t
 t/50_timezone.t
+t/bug-reports.t
 t/class-date-invalid.t
 xt/release/unused-vars.t
