@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::Date.
 
+NEXT
+    - Quiet spurious warning. (GH#9)
+
 1.1.15 Mon May  5 06:18:37 2014
     - Don't require Env::C  due to RT #95332
 

@@ -24,6 +24,7 @@ sub compare { return ($_[1] ? 1 : 0) * ($_[2] ? -1 : 1) }
 sub error { shift->[ci_error]; }
 
 sub errmsg { my ($s) = @_;
+    no warnings 'redundant'; # sometimes we need the errmsg, sometimes we don't
     sprintf $ERROR_MESSAGES[ $s->[ci_error] ]."\n", $s->[ci_errmsg] 
 }
 *errstr = *errmsg;
