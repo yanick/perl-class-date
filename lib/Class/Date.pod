@@ -554,26 +554,6 @@ the date overflows, then it returns the last day insted.
 
 Both settings keep the time information.
 
-=head1 WORKING WITHOUT A C COMPILER
-
-Class::Date can be used without a C compiler since 1.0.8. If you want to do 
-this, you only need to copy the "Date.pm" wherever your perl compiler searches
-for it. You must make a "Class" directory for it before.
-
-In Debian GNU/Linux system (woody) , a good choice can be the following:
-
-  mkdir /usr/local/share/perl/5.6.1/Class
-  cp Date.pm /usr/local/share/perl/5.6.1/Class
-
-And the module will work.
-
-You can use the $WARNINGS switch to switch off the complains about the missing
-XS part from your perl program:
-
-    BEGIN { $Class::Date::WARNINGS=0; }
-    use Class::Date;
-    ...
-
 =head1 TIMEZONE SUPPORT
 
 Since 1.0.11, Class::Date handle timezones natively on most platforms (see
