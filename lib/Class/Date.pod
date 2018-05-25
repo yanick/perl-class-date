@@ -407,7 +407,7 @@ difference between the source and the destination timezone.
 The Class::Date::Rel object consists of a month part and a day part. Most
 people only use the "day" part of it. If you use both part, then you can get
 these parts with the "sec_part" and "mon_part" method. If you use "sec",
-"month", etc. methods or if you use this object in a mathematical conent,
+"month", etc. methods or if you use this object in a mathematical context,
 then this object is converted to one number, which is interpreted as second.
 The conversion is based on a 30.436 days month. Don't use it too often,
 because it is confusing...
@@ -557,7 +557,7 @@ Both settings keep the time information.
 =head1 WORKING WITHOUT A C COMPILER
 
 Class::Date can be used without a C compiler since 1.0.8. If you want to do 
-this, you only need to copy the "Date.pm" whereever your perl compiler searches
+this, you only need to copy the "Date.pm" wherever your perl compiler searches
 for it. You must make a "Class" directory for it before.
 
 In Debian GNU/Linux system (woody) , a good choice can be the following:
