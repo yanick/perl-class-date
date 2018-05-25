@@ -24,13 +24,8 @@ use Class::Date::Invalid;
 
 BEGIN { 
     $WARNINGS = 1 if !defined $WARNINGS;
-    if ($] > 5.006) {
-        *timelocal = *Time::Local::timelocal_nocheck;
-        *timegm = *Time::Local::timegm_nocheck;
-    } else {
-        *timelocal = *Time::Local::timelocal;
-        *timegm = *Time::Local::timegm;
-    }
+    *timelocal = *Time::Local::timelocal_nocheck;
+    *timegm = *Time::Local::timegm_nocheck;
 
     @ISA=qw(Exporter);
     %EXPORT_TAGS = ( errors => $Class::Date::Const::EXPORT_TAGS{errors});
