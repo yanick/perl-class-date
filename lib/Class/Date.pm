@@ -1,5 +1,5 @@
 package Class::Date;
-# $Id: Date.pm,v 8dbcc6b6035d 2008/11/23 00:41:11 dlux $
+# ABSTRACT: Class for easy date and time manipulation
 
 use 5.006;
 

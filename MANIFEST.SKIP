@@ -15,3 +15,4 @@ Date.c
 ^Makefile(.old)?$
 ^MYMETA.*
 
+dist.ini

@@ -1,9 +1,5 @@
 =encoding utf8
 
-=head1 NAME
-
-Class::Date - Class for easy date and time manipulation
-
 =head1 SYNOPSIS
 
   use Class::Date qw(:errors date localdate gmdate now -DateParse -EnvC);
@@ -802,14 +798,6 @@ All rights reserved. This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 
 Portions Copyright (c) Matt Sergeant
-
-=head1 AUTHOR
-
-  dLux (Szabó, Balázs) <dlux@dlux.hu>
-
-=head1 MAINTAINER
-
-   L<http://szabgab.com/>
 
 =head1 CREDITS
 
