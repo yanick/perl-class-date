@@ -16,3 +16,4 @@ Date.c
 ^MYMETA.*
 
 dist.ini
+.appveyor.yml
