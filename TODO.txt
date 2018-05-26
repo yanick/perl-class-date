@@ -1,4 +1,0 @@
-- Arra már rájöttünk, hogy az a galiba a rendszerrel, hogy hogy az strftime
-  "%Z" rosszul adja vissza az idõzónát perl-ben. Meg kell vizsgálni, hogy
-  ez C-ben milyen szinten jelentkezik, és hogy a date.c-ben miért megy
-
