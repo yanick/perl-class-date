@@ -155,14 +155,14 @@ sub new { my ($proto,$time,$tz)=@_;
   }
 }
 
-sub new_copy { my ($s,$input,$tz)=@_;
+sub new_copy { my ($s,$input)=@_;
   my $new_object=[ @$input ];
   # we don't mind $isgmt!
   return bless($new_object, ref($s) || $s);
 }
 
 sub new_from_array { my ($s,$time,$tz) = @_;
-  my ($y,$m,$d,$hh,$mm,$ss,$dst) = @$time;
+  my ($y,$m,$d,$hh,$mm,$ss) = @$time;
   my $obj= [
     ($y||2000)-1900, ($m||1)-1, $d||1,
     $hh||0         , $mm||0   , $ss||0
