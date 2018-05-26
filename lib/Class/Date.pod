@@ -208,6 +208,11 @@ a Class::Date::Rel class for relative dates.
 
 You can use "+", "-", "<" and ">" operators as with native perl data types.
 
+Note that this module is fairly ancient and dusty. You 
+might want to take a look at L<DateTime> and its related 
+modules for a more standard, and maintained, Perl date
+manipulation solution.
+
 =head1 USAGE
 
 If you want to use a date object, you need to do the following:
