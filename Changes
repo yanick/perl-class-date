@@ -4,6 +4,7 @@ Revision history for Class::Date
   [ API CHANGES ]
 
   [ BUG FIXES ]
+  - Modules still had the hard-coded $VERSIONs in them. (GH#11)
 
   [ DOCUMENTATION ]
 
