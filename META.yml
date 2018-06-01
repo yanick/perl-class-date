@@ -1,0 +1,60 @@
+---
+abstract: 'Class for easy date and time manipulation'
+author:
+  - 'dLux (Szabó, Balázs) <dlux@dlux.hu>'
+  - 'Gabor Szabo <szabgab@gmail.com>'
+  - 'Yanick Champoux <yanick@cpan.org>'
+build_requires:
+  ExtUtils::MakeMaker: '0'
+  File::Spec: '0'
+  IO::Handle: '0'
+  IPC::Open3: '0'
+  Test::More: '0'
+  Test::Warnings: '0'
+configure_requires:
+  ExtUtils::MakeMaker: '0'
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 6.011, CPAN::Meta::Converter version 2.150010'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: '1.4'
+name: Class-Date
+no_index:
+  directory:
+    - inc
+provides:
+  Class::Date:
+    file: lib/Class/Date.pm
+    version: v1.1.17
+  Class::Date::Const:
+    file: lib/Class/Date/Const.pm
+    version: v1.1.17
+  Class::Date::Invalid:
+    file: lib/Class/Date/Invalid.pm
+    version: v1.1.17
+  Class::Date::Rel:
+    file: lib/Class/Date/Rel.pm
+    version: v1.1.17
+requires:
+  Carp: '0'
+  Date::Parse: '0'
+  Exporter: '0'
+  POSIX: '0'
+  Scalar::Util: '0'
+  Time::Local: '0'
+  constant: '0'
+  overload: '0'
+  perl: '5.006'
+  strict: '0'
+  vars: '0'
+  warnings: '0'
+resources:
+  bugtracker: https://github.com/yanick/perl-class-date/issues
+  homepage: https://github.com/yanick/perl-class-date
+  repository: https://github.com/yanick/perl-class-date.git
+version: 1.1.17
+x_authority: cpan:YANICK
+x_contributors:
+  - 'Vladimir Timofeev <vovkasm@gmail.com>'
+x_serialization_backend: 'YAML::Tiny version 1.67'
