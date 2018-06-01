@@ -6,8 +6,6 @@ use vars qw(@NEW_FROM_SCALAR);
 use Class::Date::Const;
 use Scalar::Util qw(blessed);
 
-our $VERSION = '1.1.15';
-
 use constant SEC_PER_MONTH => 2_629_744;
 
 # see the ClassDateRel const in package Class::Date
